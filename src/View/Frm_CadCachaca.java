@@ -10,8 +10,12 @@ import Controller.TipoCachacaDAO;
 import Model.Cachaca;
 import Model.TipoCachaca;
 import Util.Classes.ImagemConfig;
+import Util.Classes.IntegerDocument;
+import Util.Classes.MoneyDocument;
+import Util.Classes.NormalDocument;
 import Util.Classes.PropertiesManager;
 import Util.Classes.TableConfig;
+import Util.Classes.UpperDocument;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -31,6 +35,7 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
         initComponents();
         setEnabledButtons(true);
         carregaTipoCachaca();
+        setFieldsCase();
     }
 
     @SuppressWarnings("unchecked")
@@ -211,9 +216,9 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel11)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 102, Short.MAX_VALUE))
                     .addComponent(jScrollPane2))
-                .addContainerGap())
+                .addGap(11, 11, 11))
         );
 
         jPanel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -280,7 +285,7 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(txt_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -676,5 +681,16 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
         txt_codigo.setText(tb_cachacas.getValueAt(tb_cachacas.getSelectedRow(), 0).toString());
         txt_nome.setText(tb_cachacas.getValueAt(tb_cachacas.getSelectedRow(), 1).toString());
         cbx_tipo.setSelectedItem(tb_cachacas.getValueAt(tb_cachacas.getSelectedRow(), 2));
+    }
+
+    private void setFieldsCase() {
+        txt_nome.setDocument(new UpperDocument(255));
+        txt_referencia.setDocument(new IntegerDocument(13));
+        txt_grau.setDocument(new IntegerDocument(2));
+        txt_envelhecimento.setDocument(new UpperDocument(255));
+        txt_madeira.setDocument(new UpperDocument(255));
+        txt_preco.setDocument(new MoneyDocument());
+        txt_origem.setDocument(new UpperDocument(255));
+        txt_descricao.setDocument(new NormalDocument(65535));
     }
 }
