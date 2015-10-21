@@ -11,11 +11,20 @@ import Model.Cachaca;
 import Model.TipoCachaca;
 import Util.Classes.ImagemConfig;
 import Util.Classes.IntegerDocument;
-import Util.Classes.MoneyDocument;
 import Util.Classes.NormalDocument;
 import Util.Classes.PropertiesManager;
 import Util.Classes.TableConfig;
 import Util.Classes.UpperDocument;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.NumberFormat;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -30,11 +39,13 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
     Cachaca cachaca;
     CachacaDAO cachacaDAO;
     TipoCachacaDAO tipoCachacaDAO;
+    static String imagem = null;
 
     public Frm_CadCachaca() {
         initComponents();
         setEnabledButtons(true);
         carregaTipoCachaca();
+        listaCachacas();
         setFieldsCase();
     }
 
@@ -117,6 +128,15 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
 
         jLabel8.setText("Preço *:");
 
+        txt_preco.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txt_precoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txt_precoFocusLost(evt);
+            }
+        });
+
         jLabel9.setText("Referência *:");
 
         jLabel10.setText("Origem *:");
@@ -135,9 +155,9 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel5)
-                    .addComponent(jLabel11)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -214,11 +234,9 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
                         .addComponent(txt_origem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel11)
-                        .addGap(0, 102, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2))
-                .addGap(11, 11, 11))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11))
+                .addContainerGap())
         );
 
         jPanel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -258,6 +276,9 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
             tb_cachacas.getColumnModel().getColumn(0).setMinWidth(70);
             tb_cachacas.getColumnModel().getColumn(0).setPreferredWidth(70);
             tb_cachacas.getColumnModel().getColumn(0).setMaxWidth(70);
+            tb_cachacas.getColumnModel().getColumn(1).setMinWidth(150);
+            tb_cachacas.getColumnModel().getColumn(1).setPreferredWidth(150);
+            tb_cachacas.getColumnModel().getColumn(1).setMaxWidth(150);
             tb_cachacas.getColumnModel().getColumn(3).setMinWidth(100);
             tb_cachacas.getColumnModel().getColumn(3).setPreferredWidth(100);
             tb_cachacas.getColumnModel().getColumn(3).setMaxWidth(100);
@@ -274,7 +295,7 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(txt_filtro))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1131, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1145, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -285,7 +306,7 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(txt_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -374,6 +395,7 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        lb_foto.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lb_foto.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         lb_foto.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -403,10 +425,10 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lb_foto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(11, 11, 11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -434,7 +456,7 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
     }//GEN-LAST:event_cbx_tipoFocusGained
 
     private void cbx_tipoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbx_tipoFocusLost
-        btn_salvar.requestFocus();
+        txt_origem.requestFocus();
     }//GEN-LAST:event_cbx_tipoFocusLost
 
     private void cbx_tipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbx_tipoActionPerformed
@@ -465,6 +487,8 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_apagarActionPerformed
 
     private void btn_novoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_novoActionPerformed
+        cachaca = new Cachaca();
+        limparCampos();
         setEnabledButtons(false);
         txt_nome.requestFocus();
     }//GEN-LAST:event_btn_novoActionPerformed
@@ -475,18 +499,33 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_cancelarActionPerformed
 
     private void btn_salvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_salvarActionPerformed
-        //criar metodo de validação dos campos obrigatórios
+        validaCampos();
     }//GEN-LAST:event_btn_salvarActionPerformed
 
     private void lb_fotoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lb_fotoMousePressed
-        buscaDiretorio();
+        if (lb_foto.isEnabled() == true) {
+            buscaImagem();
+        }
     }//GEN-LAST:event_lb_fotoMousePressed
 
     private void tb_cachacasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tb_cachacasMousePressed
         if (tb_cachacas.getSelectedRowCount() == 1) {
-            carregaCachacaNaTela(tb_cachacas.getValueAt(tb_cachacas.getSelectedRow(), 0));
+            carregaCachacaNaTela(tb_cachacas.getValueAt(tb_cachacas.getSelectedRow(), 0).toString());
         }
     }//GEN-LAST:event_tb_cachacasMousePressed
+
+    private void txt_precoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_precoFocusLost
+        try {
+          txt_preco.setText(NumberFormat.getCurrencyInstance().format(Double.parseDouble(
+                  txt_preco.getText().replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
+          )));
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_txt_precoFocusLost
+
+    private void txt_precoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_precoFocusGained
+        txt_preco.setText(null);
+    }//GEN-LAST:event_txt_precoFocusGained
 
     /**
      * @param args the command line arguments
@@ -586,28 +625,152 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
         setEnabledFields(b);
     }
 
+     private void validaCampos() {
+        if (txt_nome.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Nome inválido!");
+            txt_nome.requestFocus();
+        } else {
+            if (txt_referencia.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Referência Inválida!");
+                txt_referencia.requestFocus();
+            } else {
+                if (txt_grau.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Grau Inválido!");
+                    txt_grau.requestFocus();
+                } else {
+                    if (txt_madeira.getText().trim().isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Madeira inválida!");
+                        txt_madeira.requestFocus();
+                    } else {
+                        if (txt_preco.getText().trim().isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "Preço inválido!");
+                            txt_preco.requestFocus();
+                        } else {
+                            if (cbx_tipo.getSelectedItem() == null) {
+                                JOptionPane.showMessageDialog(null, "Tipo inválido!");
+                                cbx_tipo.requestFocus();
+                            } else {
+                                if (txt_origem.getText().trim().isEmpty()) {
+                                    JOptionPane.showMessageDialog(null, "Origem inválida!");
+                                    txt_origem.requestFocus();
+                                } else {
+                                    if (imagem == null) {
+                                        JOptionPane.showMessageDialog(null, "Foto da cachaça inválida!");
+                                    } else {
+                                        salvar();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+     
     private void salvar() {
         try {
-            cachaca = new Cachaca();
-            if (!txt_codigo.getText().isEmpty()) {
+            tipoCachacaDAO = new TipoCachacaDAO();
+            cachacaDAO = new CachacaDAO();
+
+            if (!txt_codigo.getText().trim().isEmpty()) {
                 cachaca.setCodCachaca(Integer.parseInt(txt_codigo.getText()));
             }
+            cachaca.setNome(txt_nome.getText());
+            cachaca.setReferencia(txt_referencia.getText());
+            cachaca.setGraduacao(Integer.parseInt(txt_grau.getText()));
+            if (!txt_envelhecimento.getText().trim().isEmpty()) {
+                cachaca.setEnvelhecimento(txt_envelhecimento.getText());
+            }
+            cachaca.setMadeira(txt_madeira.getText());
+            cachaca.setPreco(Double.parseDouble(txt_preco.getText().replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")));
             cachaca.setCodTipo(tipoCachacaDAO.find(cbx_tipo.getSelectedItem().toString()));
-            cachaca.setDescricao(txt_nome.getText());
-            cachacaDAO = new CachacaDAO();
+            cachaca.setOrigem(txt_origem.getText());
+            if (!txt_descricao.getText().trim().isEmpty()) {
+                cachaca.setDescricao(txt_descricao.getText());
+            }
             cachacaDAO.save(cachaca);
-            JOptionPane.showMessageDialog(null, "Cachaca salvo com sucesso!\n");
+            JOptionPane.showMessageDialog(null, "Cachaca salva com sucesso!\n");
             limparCampos();
         } catch (Exception ex) {
             if (ex.toString().contains("com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException")) {
-                JOptionPane.showMessageDialog(null, "Cachaca já cadastrado!");
+                JOptionPane.showMessageDialog(null, "Cachaca já cadastrada!");
                 txt_nome.requestFocus();
             } else {
-                JOptionPane.showMessageDialog(null, "Erro ao salvar o Cachaca!\n" + ex);
+                JOptionPane.showMessageDialog(null, "Erro ao salvar a Cachaca!\n" + ex);
             }
         } finally {
             listaCachacas();
         }
+    }
+
+    private void buscaImagem() {
+        JFileChooser c = new JFileChooser();
+        c.showOpenDialog(this);//abre o arquivo  
+        File file = c.getSelectedFile();//abre o arquivo selecionado  
+        if (file != null) {
+            Path path = Paths.get(file.getAbsolutePath());
+            imagem = path.toString();
+            if (imagem.endsWith("png") || imagem.endsWith("jpg")) {
+                byte[] bFile = new byte[(int) file.length()];
+                if (bFile.length <= 1048576) {
+                    try {
+                        FileInputStream fis = new FileInputStream(file);
+                        fis.read(bFile);
+                        fis.close();
+                        cachaca.setFoto(bFile);
+                        carregaImagem(bFile);
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Erro ao carregar a imagem do diretório: " + imagem + "\n" + e.getMessage());
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Imagem muito grande!\n");
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Extenção do arquivo selecionado inválido!\n "
+                        + "Tente imagens com extenção: PNG ou JPG");
+            }
+        }
+    }
+
+    private ImageIcon getImagemByCaminho(String caminho) {
+        ImageIcon imagem = new ImageIcon(caminho);
+        if (imagem != null) {
+            return imagem;
+        } else {
+            System.err.println("Não foi possível encontrar o arquivo: " + caminho);
+            return null;
+        }
+    }
+
+    private void carregaImagem(byte[] imagem) {
+        try {
+            ImageIcon img = new ImageIcon(imagem);
+            lb_foto.setIcon(new ImageIcon(alteraTamanhoImagem(img, lb_foto.getWidth() - 50)));
+            lb_foto.revalidate();
+            lb_foto.repaint();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public Image alteraTamanhoImagem(ImageIcon imagem, int largura) {
+        //Calcula a proporção para descobrir a nova altura 
+        Image img=imagem.getImage();
+        double proportion = largura / (double) img.getWidth(null);
+        int newHeight = (int) (img.getHeight(null) * proportion);
+
+        //Cria a imagem de destino          
+        BufferedImage newImage = new BufferedImage(largura, newHeight, BufferedImage.TYPE_INT_ARGB);
+
+        //Desenha sobre ela usando filtro Bilinear (o java não possui trinilear ou anisotrópica).  
+        Graphics2D g2d = newImage.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.drawImage(img, 0, 0, largura, newHeight, null);
+        g2d.dispose();
+
+        return newImage;
     }
 
     private void carregaTipoCachaca() {
@@ -625,7 +788,16 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
     private void limparCampos() {
         txt_codigo.setText(null);
         txt_nome.setText(null);
+        txt_referencia.setText(null);
+        txt_grau.setText(null);
+        txt_envelhecimento.setText(null);
+        txt_madeira.setText(null);
+        txt_preco.setText(null);
+        txt_origem.setText(null);
         cbx_tipo.setSelectedIndex(0);
+        txt_descricao.setText(null);
+        lb_foto.setIcon(null);
+        imagem = null;
         setEnabledButtons(true);
     }
 
@@ -634,11 +806,15 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
             TableConfig.limpaTabela(tb_cachacas);
             cachacaDAO = new CachacaDAO();
             for (Cachaca cachaca : cachacaDAO.list()) {
-                String[] linha = new String[]{cachaca.getCodCachaca().toString(), cachaca.getReferencia(), cachaca.getNome(), cachaca.getPreco() + ""};
+                String[] linha = new String[]{
+                    cachaca.getCodCachaca().toString(),
+                    cachaca.getReferencia(),
+                    cachaca.getNome(),
+                    NumberFormat.getCurrencyInstance().format(cachaca.getPreco())};
                 TableConfig.getModel(tb_cachacas).addRow(linha);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro ao listar os Cachacas!\n" + e);
+            JOptionPane.showMessageDialog(null, "Erro ao listar as Cachacas!\n" + e);
         }
     }
 
@@ -647,50 +823,45 @@ public class Frm_CadCachaca extends javax.swing.JFrame {
             cachacaDAO = new CachacaDAO();
             cachacaDAO.remove(cachacaDAO.find(codcachaca));
             TableConfig.getModel(tb_cachacas).removeRow(tb_cachacas.getSelectedRow());
-            JOptionPane.showMessageDialog(null, "Cachaca removido com sucesso!\n");
+            JOptionPane.showMessageDialog(null, "Cachaca removida com sucesso!\n");
             setEnabledButtons(true);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro ao remover o Cachaca!\n" + e);
+            JOptionPane.showMessageDialog(null, "Erro ao remover a Cachaca!\n" + e);
         }
     }
 
-    private void buscaDiretorio() {
-        JFileChooser fileChooser = new JFileChooser();
-        props = new PropertiesManager();
-        imagemConfig = new ImagemConfig();
-        int result = fileChooser.showOpenDialog(null);
-        if (result == JFileChooser.CANCEL_OPTION) {
-        } else {
-            String file = fileChooser.getSelectedFile().getPath();
-            props.altera("logo", file);
-            carregaLogo(file);
-        }
-    }
-
-    private void carregaLogo(String caminho) {
+    private void carregaCachacaNaTela(String codigo) {
         try {
-            lb_foto.setText("");
-            imagemConfig = new ImagemConfig();
-            imagemConfig.carregaImagem(lb_foto, caminho, lb_foto.getWidth());
+            cachacaDAO = new CachacaDAO();
+            tipoCachacaDAO=new TipoCachacaDAO();
+            cachaca = cachacaDAO.find(Integer.parseInt(codigo));
+            txt_codigo.setText(cachaca.getCodCachaca() + "");
+            txt_nome.setText(cachaca.getNome());
+            txt_referencia.setText(cachaca.getReferencia());
+            txt_grau.setText(cachaca.getGraduacao() + "");
+            if (cachaca.getEnvelhecimento() != null) {
+                txt_envelhecimento.setText(cachaca.getEnvelhecimento());
+            }
+            txt_madeira.setText(cachaca.getMadeira());
+            txt_preco.setText(NumberFormat.getCurrencyInstance().format(cachaca.getPreco()));
+            cbx_tipo.setSelectedItem(tipoCachacaDAO.find(cachaca.getCodTipo().getDescricao()));
+            txt_origem.setText(cachaca.getOrigem());
+            txt_descricao.setText(cachaca.getDescricao());
+            carregaImagem(cachaca.getFoto());
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro ao carregar a Logo!\n" + e);
+            JOptionPane.showMessageDialog(null, "Erro ao carregar os dados da cachaca: "+codigo+"\n"+e);
         }
-    }
-
-    private void carregaCachacaNaTela(Object valueAt) {
-        txt_codigo.setText(tb_cachacas.getValueAt(tb_cachacas.getSelectedRow(), 0).toString());
-        txt_nome.setText(tb_cachacas.getValueAt(tb_cachacas.getSelectedRow(), 1).toString());
-        cbx_tipo.setSelectedItem(tb_cachacas.getValueAt(tb_cachacas.getSelectedRow(), 2));
     }
 
     private void setFieldsCase() {
         txt_nome.setDocument(new UpperDocument(255));
-        txt_referencia.setDocument(new IntegerDocument(13));
+//        txt_referencia.setDocument(new IntegerDocument(13));
         txt_grau.setDocument(new IntegerDocument(2));
         txt_envelhecimento.setDocument(new UpperDocument(255));
         txt_madeira.setDocument(new UpperDocument(255));
-        txt_preco.setDocument(new MoneyDocument());
+//        txt_preco.setDocument(new MoneyDocument());
         txt_origem.setDocument(new UpperDocument(255));
         txt_descricao.setDocument(new NormalDocument(65535));
     }
+
 }

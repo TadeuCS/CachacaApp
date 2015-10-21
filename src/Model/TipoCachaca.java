@@ -22,7 +22,7 @@ import javax.persistence.NamedQuery;
 @NamedQueries({
     @NamedQuery(name = "TipoCachaca.FindAll", query = "SELECT c FROM TipoCachaca c"),
     @NamedQuery(name = "TipoCachaca.FindByCodigo", query = "SELECT c FROM TipoCachaca c WHERE c.codTipo = :codigo"),
-    @NamedQuery(name = "TipoCachaca.FindByDescricao", query = "SELECT c FROM TipoCachaca c WHERE c.descricao = :tipo")
+    @NamedQuery(name = "TipoCachaca.FindByDescricao", query = "SELECT c FROM TipoCachaca c WHERE c.descricao = :descricao")
 })
 public class TipoCachaca implements Serializable {
 

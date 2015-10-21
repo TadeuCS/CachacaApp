@@ -15,7 +15,6 @@ public class IntegerDocument extends NormalDocument {
             throws BadLocationException {  
         if (str == null)  
             return;  
-          
         try {  
             Integer.parseInt(str);  
         } catch (Exception e) {  

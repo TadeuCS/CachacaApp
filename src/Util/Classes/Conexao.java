@@ -17,7 +17,7 @@ public class Conexao{
     Connection con;
     Statement st;
     protected Query query;
-    protected EntityManagerFactory emf=Persistence.createEntityManagerFactory("CachacaWebPU");
+    protected EntityManagerFactory emf=Persistence.createEntityManagerFactory("CachacaAppPU");
     protected EntityManager em=emf.createEntityManager();
 
     public Conexao() {
@@ -49,7 +49,7 @@ public class Conexao{
 
     private void start() {
         if (getConexao(prop.ler("ip"), prop.ler("banco"), prop.ler("usuario"), prop.ler("senha")) != null) {
-            emf = Persistence.createEntityManagerFactory("CachacaWebPU", getParametros());
+            emf = Persistence.createEntityManagerFactory("CachacaAppPU", getParametros());
             em = emf.createEntityManager();
         } else {
             JOptionPane.showMessageDialog(null, "Erro ao conectar no banco de dados neste IP: " + prop.ler("ip"));

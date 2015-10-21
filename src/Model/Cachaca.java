@@ -6,11 +6,14 @@
 package Model;
 
 import java.io.Serializable;
+import java.sql.Blob;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -39,15 +42,18 @@ public class Cachaca implements Serializable {
     private String madeira;
     @Column(name = "GRADUACAO", nullable = false)
     private int graduacao;
+    @Column(name = "ORIGEM", nullable = false)
+    private String origem;
     @Column(name = "PRECO", precision = 6, scale = 2, nullable = false)
     private double preco;
     @Column(name = "ENVELHECIMENTO", nullable = false)
     private String envelhecimento;
-    @Column(name = "FOTO", unique = true, nullable = false)
-    private String foto;
+    @Lob
+    @Column(name = "FOTO", unique = true, nullable=false, columnDefinition="mediumblob")
+    private byte[] foto;
     @Column(name = "DESCRICAO", columnDefinition = "text", nullable = true)
     private String descricao;
-    @Column(name = "CODTIPO")
+    @JoinColumn(name = "CODTIPO", referencedColumnName = "CODTIPO")
     @OneToOne
     private TipoCachaca codTipo;
 
@@ -58,6 +64,15 @@ public class Cachaca implements Serializable {
     public void setCodCachaca(Integer codCachaca) {
         this.codCachaca = codCachaca;
     }
+
+    public String getOrigem() {
+        return origem;
+    }
+
+    public void setOrigem(String origem) {
+        this.origem = origem;
+    }
+
 
     public String getNome() {
         return nome;
@@ -107,11 +122,11 @@ public class Cachaca implements Serializable {
         this.envelhecimento = envelhecimento;
     }
 
-    public String getFoto() {
+    public byte[] getFoto() {
         return foto;
     }
 
-    public void setFoto(String foto) {
+    public void setFoto(byte[] foto) {
         this.foto = foto;
     }
 
